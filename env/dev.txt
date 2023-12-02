@@ -120,7 +120,7 @@ pillow==10.1.0
     #   torchvision
     #   ultralytics
 pip-tools==7.3.0
-    # via -r env/requirements.in
+    # via -r env/dev.in
 platformdirs==4.0.0
     # via black
 protobuf==3.20.3

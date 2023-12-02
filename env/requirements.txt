@@ -12,16 +12,12 @@ attrs==23.1.0
     # via aiohttp
 brotli==1.1.0
     # via geventhttpclient
-build==1.0.3
-    # via pip-tools
 certifi==2023.11.17
     # via
     #   geventhttpclient
     #   requests
 charset-normalizer==3.3.2
     # via requests
-click==8.1.7
-    # via pip-tools
 coloredlogs==15.0.1
     # via onnxruntime
 contourpy==1.2.0
@@ -93,7 +89,6 @@ opencv-python==4.8.1.78
     # via ultralytics
 packaging==23.2
     # via
-    #   build
     #   matplotlib
     #   onnxruntime
     #   tritonclient
@@ -106,8 +101,6 @@ pillow==10.1.0
     #   matplotlib
     #   torchvision
     #   ultralytics
-pip-tools==7.3.0
-    # via -r env/requirements.in
 protobuf==3.20.3
     # via
     #   onnx
@@ -119,8 +112,6 @@ py-cpuinfo==9.0.0
     # via ultralytics
 pyparsing==3.1.1
     # via matplotlib
-pyproject-hooks==1.0.0
-    # via build
 python-dateutil==2.8.2
     # via
     #   matplotlib
@@ -168,8 +159,6 @@ ultralytics==8.0.221
     # via -r env/requirements.in
 urllib3==2.1.0
     # via requests
-wheel==0.42.0
-    # via pip-tools
 yarl==1.9.3
     # via aiohttp
 zope-event==5.0
@@ -178,5 +167,4 @@ zope-interface==6.1
     # via gevent
 
 # The following packages are considered to be unsafe in a requirements file:
-# pip
 # setuptools
