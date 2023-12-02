@@ -16,14 +16,10 @@ RUN apt-get update && \
 USER $USER
 WORKDIR $APP_HOME
 
-# Download demo image
-RUN wget -O bus.jpg https://github.com/ultralytics/ultralytics/blob/main/ultralytics/assets/bus.jpg?raw=true
-
 # Install python packages
 ENV PATH=${APP_HOME}/.local/bin:${PATH}
-RUN git clone https://github.com/ko3n1g/yolov8-triton-complete.git && \
-    pip install --user --no-cache-dir -r yolov8-triton-complete/env/requirements.txt && \
-    rm -rf yolov8-triton-complete/
+RUN --mount=type=bind,src=env/requirements.txt,target=requirements.txt \&& \
+    pip install --user --no-cache-dir -r requirements.txt 
 
 # Copy over client_api
 COPY client_api/ ./

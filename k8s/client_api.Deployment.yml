@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tritonclient
+  name: client_api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tritonclient-pod
+      app: client_api-pod
   template:
     metadata:
       labels:
-        app: tritonclient-pod
+        app: client_api-pod
     spec:
       containers:
         - name: main
           ports:
             - containerPort: 80
               name: http
-          image: "tritonclient"
+          image: "client_api"
           imagePullPolicy: IfNotPresent # Necessary for Kubernetes via Docker Desktop
           resources:
             limits:
