@@ -25,9 +25,7 @@ certifi==2023.11.17
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
-    # via
-    #   typer
-    #   uvicorn
+    # via uvicorn
 coloredlogs==15.0.1
     # via onnxruntime
 contourpy==1.2.0
@@ -174,15 +172,12 @@ tqdm==4.66.1
     # via ultralytics
 tritonclient[all]==2.36.0
     # via -r env/requirements.in
-typer==0.9.0
-    # via -r env/requirements.in
 typing-extensions==4.8.0
     # via
     #   fastapi
     #   pydantic
     #   pydantic-core
     #   torch
-    #   typer
 tzdata==2023.3
     # via pandas
 ultralytics==8.0.221
