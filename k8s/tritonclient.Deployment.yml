@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tritonclient
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tritonclient-pod
+  template:
+    metadata:
+      labels:
+        app: tritonclient-pod
+    spec:
+      containers:
+        - name: main
+          ports:
+            - containerPort: 80
+              name: http
+          image: "tritonclient"
+          imagePullPolicy: IfNotPresent # Necessary for Kubernetes via Docker Desktop
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+          env:
+            - name: TRITON_SERVICE
+              value: tritonserver.default.svc.cluster.local:8000

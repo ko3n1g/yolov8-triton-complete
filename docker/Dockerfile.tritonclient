@@ -16,30 +16,15 @@ RUN apt-get update && \
 USER $USER
 WORKDIR $APP_HOME
 
+# Download demo image
+RUN wget -O bus.jpg https://github.com/ultralytics/ultralytics/blob/main/ultralytics/assets/bus.jpg?raw=true
+
 # Install python packages
+ENV PATH=${APP_HOME}/.local/bin:${PATH}
 RUN git clone https://github.com/ko3n1g/yolov8-triton-complete.git && \
     pip install --user --no-cache-dir -r yolov8-triton-complete/env/requirements.txt && \
     rm -rf yolov8-triton-complete/
 
-# Download demo image and create script
-RUN wget -O bus.jpg https://github.com/ultralytics/ultralytics/blob/main/ultralytics/assets/bus.jpg?raw=true
-RUN <<EOF
-echo "\
-import typer
-from ultralytics import YOLO
-
-def main(tritonserver_host: str):
-    print(f'Connecting to triton server host at: {tritonserver_host}')
-    
-    # Load the Triton Server model
-    model = YOLO(f'http://{tritonserver_host}:8000/yolo', task='detect')
-
-    # Run inference on the server
-    results = model('bus.jpg')
-    print(results)
-
-if __name__ == '__main__':
-    typer.run(main)" > main.py
-EOF
-
-ENTRYPOINT [ "python", "main.py" ]
+# Copy over client_api
+COPY client_api/ ./
+ENTRYPOINT [ "uvicorn", "main:app", "--host", "0.0.0.0" ]
