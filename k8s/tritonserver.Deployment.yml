@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tritonserver
-  labels:
-    app: tritonserver-deployment
 spec:
   replicas: 1
   selector:
@@ -23,9 +21,10 @@ spec:
               name: grpc-triton
             - containerPort: 8002
               name: metrics-triton
-          image: "nvcr.io/nvidia/tritonserver:20.12-py3"
+          image: "tritonserver"
+          imagePullPolicy: IfNotPresent # Necessary for Kubernetes via Docker Desktop
           resources:
             limits:
-              nvidia.com/mig-1g.5gb: 1
+              # nvidia.com/mig-1g.5gb: 1
               cpu: 1
               memory: 4Gi

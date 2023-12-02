@@ -24,14 +24,21 @@ RUN --mount=type=bind,source=env/requirements.txt,target=$APP_HOME/requirements.
 RUN wget -O bus.jpg https://github.com/ultralytics/ultralytics/blob/main/ultralytics/assets/bus.jpg?raw=true
 RUN <<EOF
 echo "\
+import typer
 from ultralytics import YOLO
 
-# Load the Triton Server model
-model = YOLO(f'http://localhost:8000/yolo', task='detect')
+def main(tritonserver_host: str):
+    print(f'Connecting to triton server host at: {tritonserver_host}')
+    
+    # Load the Triton Server model
+    model = YOLO(f'http://{tritonserver_host}:8000/yolo', task='detect')
 
-# Run inference on the server
-results = model('bus.jpg')
-print(results)" > main.py
+    # Run inference on the server
+    results = model('bus.jpg')
+    print(results)
+
+if __name__ == '__main__':
+    typer.run(main)" > main.py
 EOF
 
-CMD [ "python", "main.py" ]
+ENTRYPOINT [ "python", "main.py" ]

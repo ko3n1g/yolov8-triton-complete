@@ -2,3 +2,4 @@ ultralytics
 tritonclient[all]
 onnx>=1.12.0
 onnxruntime
+typer

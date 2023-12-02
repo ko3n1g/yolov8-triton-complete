@@ -6,7 +6,7 @@ metadata:
     app: tritonserver-service
 spec:
   selector:
-    app: tritonserver-deployment
+    app: tritonserver-pod
   ports:
     - protocol: TCP
       port: 8000
