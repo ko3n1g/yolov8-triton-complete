@@ -12,7 +12,7 @@ ARG triton_repo_path
 
 # Create non-root user, install deps for ultralytics
 RUN apt-get update && \
-    apt-get install -y libgl1-mesa-dev libglib2.0-0 && \
+    apt-get install -y libgl1-mesa-dev libglib2.0-0 git && \
     apt-get clean && \
     useradd -u 8877 --user-group --create-home --home-dir $APP_HOME $USER
 
@@ -21,8 +21,9 @@ USER $USER
 WORKDIR $APP_HOME
 
 # Install python packages
-RUN --mount=type=bind,source=env/requirements.txt,target=$APP_HOME/requirements.txt \
-    pip install --user --no-cache-dir -r requirements.txt
+RUN git clone https://github.com/ko3n1g/yolov8-triton-complete.git && \
+    pip install --user --no-cache-dir -r yolov8-triton-complete/env/requirements.txt && \
+    rm -rf yolov8-triton-complete/
 
 # Download model, export to ONNX, create triton model repository
 RUN python3 <<EOF
