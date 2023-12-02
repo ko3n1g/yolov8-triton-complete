@@ -27,5 +27,5 @@ docker run --rm -p 8000:8000 tritonserver
 Next, let the client send a request to it:
 
 ```bash
-docker run -v runs --rm --network=host tritonclient
+docker run --rm --network=host tritonclient
 ```
