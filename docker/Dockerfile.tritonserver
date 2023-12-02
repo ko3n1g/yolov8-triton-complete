@@ -1,0 +1,72 @@
+ARG USER=worker
+ARG APP_HOME=/home/$USER
+ARG triton_repo_path=$APP_HOME/triton_model_repository
+
+#######################################################################################
+### Download and export model, create triton model repository                         #
+#######################################################################################
+FROM python:3.11-bookworm as model-base
+ARG USER
+ARG APP_HOME
+ARG triton_repo_path
+
+# Create non-root user, install deps for ultralytics
+RUN apt-get update && \
+    apt-get install -y libgl1-mesa-dev libglib2.0-0 && \
+    apt-get clean && \
+    useradd -u 8877 --user-group --create-home --home-dir $APP_HOME $USER
+
+# Switch to user
+USER $USER
+WORKDIR $APP_HOME
+
+# Install python packages
+RUN --mount=type=bind,source=env/requirements.txt,target=$APP_HOME/requirements.txt \
+    pip install --user --no-cache-dir -r requirements.txt
+
+# Download model, export to ONNX, create triton model repository
+RUN python3 <<EOF
+import os
+from pathlib import Path
+
+from ultralytics import YOLO
+
+if __name__ == "__main__":
+
+    # Load a model
+    model = YOLO("yolov8n.pt")  # load an official model
+
+    # Export the model
+    onnx_file = model.export(format="onnx", dynamic=True)
+
+    # Define paths
+    triton_repo_path = Path(os.getenv('triton_repo_path', 'tmp')) / 'triton_repo'
+    triton_model_path = triton_repo_path / 'yolo'
+
+    # Create directories
+    (triton_model_path / '1').mkdir(parents=True, exist_ok=True)
+
+    # Move ONNX model to Triton Model path
+    Path(onnx_file).rename(triton_model_path / '1' / 'model.onnx')
+
+    # Create config file
+    (triton_model_path / 'config.pbtxt').touch()
+EOF
+
+#######################################################################################
+### Run security patches, copy triton model registry, define CMD                     #
+#######################################################################################
+FROM nvcr.io/nvidia/tritonserver:23.04-py3
+ARG USER
+ARG APP_HOME
+ARG triton_repo_path
+
+# Create non-root user
+RUN useradd -u 8877 --user-group --create-home --home-dir $APP_HOME $USER
+
+USER $USER
+WORKDIR $APP_HOME
+
+COPY --from=model-base $triton_repo_path $triton_model_path
+
+CMD [ "tritonserver", "--log-verbose=3", "--log-info=1", "--log-warning=1", "--log-error=1", "--model-repository=triton_repo/" ]

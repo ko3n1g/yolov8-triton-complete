@@ -1,0 +1,37 @@
+ARG USER=worker
+ARG APP_HOME=/home/$USER
+
+FROM python:3.11-bookworm as model-base
+ARG USER
+ARG APP_HOME
+ARG triton_repo_path
+
+# Create non-root user, install deps for ultralytics
+RUN apt-get update && \
+    apt-get install -y libgl1-mesa-dev libglib2.0-0 && \
+    apt-get clean && \
+    useradd -u 8877 --user-group --create-home --home-dir $APP_HOME $USER
+
+# Switch to user
+USER $USER
+WORKDIR $APP_HOME
+
+# Install python packages
+RUN --mount=type=bind,source=env/requirements.txt,target=$APP_HOME/requirements.txt \
+    pip install --user --no-cache-dir -r requirements.txt
+
+# Download demo image and create script
+RUN wget -O bus.jpg https://github.com/ultralytics/ultralytics/blob/main/ultralytics/assets/bus.jpg?raw=true
+RUN <<EOF
+echo "\
+from ultralytics import YOLO
+
+# Load the Triton Server model
+model = YOLO(f'http://localhost:8000/yolo', task='detect')
+
+# Run inference on the server
+results = model('bus.jpg')
+print(results)" > main.py
+EOF
+
+CMD [ "python", "main.py" ]
